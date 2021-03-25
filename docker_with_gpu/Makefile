@@ -1,4 +1,4 @@
-TAG1 = weisburd/deepvariant:deeptrio-1.1.0
+TAG1 = weisburd/deepvariant:deeptrio-1.1.0-gpu
 
 all: build push
 
