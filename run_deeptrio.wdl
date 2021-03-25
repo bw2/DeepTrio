@@ -84,12 +84,14 @@ task MakeExamples {
 
         mkdir examples
 
-        /deepvariant/bazel-bin/deeptrio/make_examples \
+        /opt/deepvariant/bin/deeptrio/make_examples \
             --mode calling \
             --ref ~{ref_fasta} \
             --reads ~{reads} \
             --reads_parent1 ~{parent1_reads} \
             --reads_parent2 ~{parent2_reads} \
+            --sample_name ~{name} \
+            --sample_name_to_call ~{name} \
             --examples examples
 
         tar czf examples-~{name}.tar.gz examples
@@ -101,7 +103,7 @@ task MakeExamples {
     }
 
     runtime {
-        docker: "weisburd/deepvariant@sha256:f683838a10844442334974616f19833849e6881f416890037964461fdf7850d6"
+        docker: "weisburd/deepvariant@sha256:5badeaf0485033b8606fa67b791ca5b35d5a3a92e8a2811f954733789b861f33"
         cpu: 1
         preemptible: 1
         disks: "local-disk ${disk_size} HDD"

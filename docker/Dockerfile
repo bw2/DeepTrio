@@ -1,43 +1,64 @@
-FROM gcr.io/deepvariant-docker/deepvariant:1.1.0
+FROM gcr.io/deepvariant-docker/deepvariant:deeptrio-1.1.0
+#FROM gcr.io/deepvariant-docker/deepvariant:1.1.0
+#FROM gcr.io/deepvariant-docker/deepvariant:deeptrio-1.1.0-gpu
+#FROM gcr.io/deepvariant-docker/deepvariant:deeptrio-1.1.0
 
 WORKDIR /
 
 #RUN git clone https://github.com/tensorflow/tensorflow.git
 #RUN cd /tensorflow && touch .tf_configure.bazelrc && bazel build
 
-RUN git clone https://github.com/google/deepvariant.git
-RUN cd /deepvariant && ./build-prereq.sh
-RUN cd /deepvariant && ./build_release_binaries.sh
+#RUN git clone https://github.com/google/deepvariant.git
+#RUN cd /deepvariant && ./build-prereq.sh
+#RUN cd /deepvariant && ./build_release_binaries.sh
 
 
-RUN apt-get update && apt-get install -y libncursesw5-dev libgdbm-dev libc6-dev zlib1g-dev libsqlite3-dev libssl-dev openssl libffi-dev
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libncursesw5-dev \
+    libgdbm-dev \
+    libc6-dev \
+    zlib1g-dev \
+    libsqlite3-dev \
+    libssl-dev \
+    openssl \
+    libffi-dev \
+    libcurl3
 
+# install gcloud
+ENV GCLOUD_SDK_VERISON="333.0.0"
+RUN wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_SDK_VERISON}-linux-x86_64.tar.gz \
+    && tar xzf google-cloud-sdk-${GCLOUD_SDK_VERISON}-linux-x86_64.tar.gz \
+    && /google-cloud-sdk/install.sh -q \
+    && /google-cloud-sdk/bin/gcloud components update --quiet \
+    && rm -rf /google-cloud-sdk/.install/
 
 # install htslib  --  install in downstream images with:
 #     COPY --from=weisburd/base-bam-tools:latest  /usr/local/bin/tabix /usr/local/bin/tabix
 #     COPY --from=weisburd/base-bam-tools:latest  /usr/local/bin/htsfile /usr/local/bin/htsfile
 #     COPY --from=weisburd/base-bam-tools:latest  /usr/local/bin/bgzip /usr/local/bin/bgzip
 #     COPY --from=weisburd/base-bam-tools:latest  /usr/local/bin/samtools /usr/local/bin/samtools
-ENV SAMTOOLS_VERSION="1.9"
-RUN wget https://github.com/samtools/htslib/releases/download/${SAMTOOLS_VERSION}/htslib-${SAMTOOLS_VERSION}.tar.bz2 \
-	&& tar xjf htslib-${SAMTOOLS_VERSION}.tar.bz2 \
-	&& rm htslib-${SAMTOOLS_VERSION}.tar.bz2 \
-	&& cd htslib-${SAMTOOLS_VERSION} \
-	&& ./configure \
-	&& make \
-	&& make install \
-	&& make clean
+#ENV SAMTOOLS_VERSION="1.12"
+#RUN wget https://github.com/samtools/htslib/releases/download/${SAMTOOLS_VERSION}/htslib-${SAMTOOLS_VERSION}.tar.bz2 \
+#	&& tar xjf htslib-${SAMTOOLS_VERSION}.tar.bz2 \
+#	&& rm htslib-${SAMTOOLS_VERSION}.tar.bz2 \
+#	&& cd htslib-${SAMTOOLS_VERSION} \
+#	&& ./configure --enable-libcurl \
+#	&& make \
+#	&& make install \
+#	&& make clean
 
 # install samtools  --  install in downstream images with:
 #     COPY --from=weisburd/base-bam-tools:latest /usr/local/bin/samtools /usr/local/bin/samtools
-RUN wget https://github.com/samtools/samtools/releases/download/${SAMTOOLS_VERSION}/samtools-${SAMTOOLS_VERSION}.tar.bz2 \
-	&& tar xjf samtools-${SAMTOOLS_VERSION}.tar.bz2 \
-	&& rm samtools-${SAMTOOLS_VERSION}.tar.bz2 \
-	&& cd samtools-${SAMTOOLS_VERSION} \
-	&& ./configure \
-	&& make \
-	&& make install \
-	&& make clean
+#RUN wget https://github.com/samtools/samtools/releases/download/${SAMTOOLS_VERSION}/samtools-${SAMTOOLS_VERSION}.tar.bz2 \
+#	&& tar xjf samtools-${SAMTOOLS_VERSION}.tar.bz2 \
+#	&& rm samtools-${SAMTOOLS_VERSION}.tar.bz2 \
+#	&& cd samtools-${SAMTOOLS_VERSION} \
+#	&& ./configure --enable-libcurl \
+#	&& make \
+#	&& make install \
+#	&& make clean
+
+ENV PATH=/google-cloud-sdk/bin:$PATH
 
 #RUN apt update && apt install -y emacs
 

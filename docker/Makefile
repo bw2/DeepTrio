@@ -1,11 +1,9 @@
-TAG1 = weisburd/deepvariant:v1.1.0
-TAG2 = weisburd/deepvariant:latest
+TAG1 = weisburd/deepvariant:deeptrio-1.1.0-gpu
 
 all: build push
 
 build:
-	docker build -t $(TAG1) -t $(TAG2) .
+	docker build -t $(TAG1) .
 
 push:
 	docker push $(TAG1)
-	docker push $(TAG2)
